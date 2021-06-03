@@ -1,0 +1,22 @@
+.girar {
+  width: 20%;
+  height: 20%;
+  animation: rotate 4s infinite;
+  animation-name: rotate;
+  animation-duration: 4s;
+  animation-timing-function: ease;
+  animation-delay: 0s;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: none;
+  animation-play-state: running;
+}
+
+@keyframes rotate {
+  0%, 100% {
+    transform-origin: 50% 50%;
+  }
+  50% {
+    transform: rotateY(-360deg);
+  }
+}
