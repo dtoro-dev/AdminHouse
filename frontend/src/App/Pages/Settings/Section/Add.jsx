@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
+import axios from 'axios'
 import {
   BtnListFloat,
   Icons,
@@ -12,12 +13,24 @@ import {
   Button,
   Paper,
   FormControlLabel,
-  Radio
+  Radio,
+  RadioGroup
 } from '@material-ui/core'
 
 import * as sectionAction from '../../../../Redux/Actions/sectionAction'
 
 const Add = props => {
+
+  const [proccess, setProccess] = useState({
+    id_section: 0,
+    description: '',
+    url_to: '',
+    icon: 'expandMoreIcon'
+  })
+
+  useEffect(() => {
+    props.sectionPrefix(proccess, setProccess)
+  }, [])
 
   const list = [
     {
@@ -34,8 +47,26 @@ const Add = props => {
     }
   ]
 
-  const saveSection = () => {
+  const sendForm = async () => {
+    let freePrefix = await props.addSection(proccess)
+    console.log(freePrefix)
+    resetForm(freePrefix)
+  }
 
+  const setForm = (e) => {
+    setProccess({
+      ...proccess,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const resetForm = async (freePrefix) => {
+    setProccess({
+      id_section: freePrefix,
+      description: '',
+      url_to: '',
+      icon: 'expandMoreIcon'
+    })
   }
 
   const renderIcons = () => {
@@ -47,20 +78,22 @@ const Add = props => {
       index++
     }
     return (
-      <div style={{maxHeight: '150px', width: '100%', overflowY: 'scroll', margin: '15px'}}>
-        <Grid container>
-          {
-            keyIcons.map((oIcon, index) => (
-              <Grid item xs={4}>
-                <FormControlLabel
-                 value={oIcon}
-                 control={<Radio color='primary'/>}
-                 label={Icons[oIcon]}
-                 labelPlacement='start'/>
-              </Grid>
-            ))
-          }
-        </Grid>
+      <div style={{ maxHeight: '150px', width: '100%', overflowY: 'scroll', margin: '15px' }}>
+        <RadioGroup aria-label="icon" name="icon" value={proccess.icon} onChange={setForm}>
+          <Grid container>
+            {
+              keyIcons.map((oIcon, key) => (
+                <Grid item xs={4} key={key}>
+                  <FormControlLabel
+                    value={oIcon}
+                    control={<Radio color='primary' />}
+                    label={Icons[oIcon]}
+                    labelPlacement='start' />
+                </Grid>
+              ))
+            }
+          </Grid>
+        </RadioGroup>
       </div>
     )
   }
@@ -72,15 +105,30 @@ const Add = props => {
           Agregar Sección
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={3} sm={3}>
             <TextField
-              required
               id='id_section'
               name='id_section'
-              label='Folio Asignado'
+              label='Prefix'
+              fullWidth
+              disabled
+              onChange={setForm}
+              value={proccess.id_section}
+              inputProps={{ style: { textAlign: 'center' } }}
+              variant='outlined'
+            />
+          </Grid>
+          <Grid item xs={9} sm={9}>
+            <TextField
+              required
+              id='url_to'
+              name='url_to'
+              label='Route'
               fullWidth
               autoComplete='off'
-              disabled={true}
+              onChange={setForm}
+              value={proccess.url_to}
+              variant='outlined'
             />
           </Grid>
           <Grid item xs={12} sm={12}>
@@ -91,16 +139,9 @@ const Add = props => {
               label='Descripción'
               fullWidth
               autoComplete='off'
-            />
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <TextField
-              required
-              id='url_to'
-              name='url_to'
-              label='Route'
-              fullWidth
-              autoComplete='off'
+              onChange={setForm}
+              value={proccess.description}
+              variant='outlined'
             />
           </Grid>
           {renderIcons()}
@@ -108,7 +149,7 @@ const Add = props => {
             <Button type='submit'
               fullWidth variant='contained'
               color='secondary'
-              onClick={saveSection} >
+              onClick={sendForm} >
               Agregar
             </Button>
           </Grid>

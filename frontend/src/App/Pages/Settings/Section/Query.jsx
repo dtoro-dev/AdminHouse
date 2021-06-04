@@ -45,7 +45,6 @@ const Query = props => {
     { id: 'id_section', label: 'Permiso', minWidth: 100, align: 'center' },
     { id: 'url_to', label: 'Ruta', minWidth: 100 },
     { id: 'created_time', label: 'F. Creación', minWidth: 50, format: 'date', align: 'center' },
-    // { id: 'update_time', label: 'F. Modificación', minWidth: 50, format: 'date', align: 'center' },
     { id: 'inactive', label: 'Estado', minWidth: 50, align: 'center' },
     { id: 'pannel', label: '', minWidth: 100, align: 'center' }
   ]

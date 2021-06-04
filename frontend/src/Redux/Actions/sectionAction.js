@@ -10,15 +10,15 @@ const addSection = (section) => async (dispatch) => {
 
   try {
 
-    const res = await axios.post('http://192.168.100.8/backend/Api/section.php?opc=save', section)
+    const { data } = await axios.post('http://192.168.100.8/backend/Api/section.php?opc=add', section)
 
-    if (res.data.error === undefined) {
-      dispatch({
-        type: SECTION_SUCCESS,
-        payload: res.data
-      })
+    if (data.error === undefined) {
+
+      swal(data.title, data.text, data.icon)
+
+      return data.freePrefix
     } else {
-      swal('Ops!', res.data.error.toUpperCase(), 'error')
+      swal('Ops!', data.error.toUpperCase(), 'error')
       dispatch({
         type: SECTION_ERROR,
         payload: false
@@ -43,6 +43,7 @@ const getSection = (proccess = null, setProccess = null, description = null, dat
   try {
 
     const { data } = await axios.post('http://192.168.100.8/backend/Api/section.php?opc=query')
+
     const rows = []
 
     if (proccess !== null) {
@@ -87,7 +88,7 @@ const getSection = (proccess = null, setProccess = null, description = null, dat
                         if (data) {
                           rows.splice(index, 1)
                           proccess.rows = rows
-                          setProccess({...proccess})
+                          setProccess({ ...proccess })
                           swal(data)
                         } else {
                           swal({
@@ -159,14 +160,14 @@ const trashSection = (proccess = null, setProccess = null, description = null, d
               value: item.inactive,
               defaultValue: "0",
               click: () => {
-                
+
                 swal({
                   title: "¿Estas seguro que deseas activar?",
                   text: `Sección ${item.description}`,
                   icon: "warning",
                   buttons: [
                     'Cancelar',
-                    'Desactivar'
+                    'Activar'
                   ],
                   dangerMode: true
                 }).then((isConfirm) => {
@@ -180,7 +181,7 @@ const trashSection = (proccess = null, setProccess = null, description = null, d
 
                           rows.splice(index, 1)
                           proccess.rows = rows
-                          setProccess({...proccess})
+                          setProccess({ ...proccess })
 
                           swal(data)
                         } else {
@@ -223,8 +224,32 @@ const trashSection = (proccess = null, setProccess = null, description = null, d
   }
 }
 
+const sectionPrefix = (proccess, setProccess) => async (dispatch) => {
+  dispatch({
+    type: SECTION_LOADING
+  })
+
+  try {
+
+    const { data } = await axios.post('http://192.168.100.8/backend/Api/prefix.php?opc=free', { prefix: 10 })
+    
+    setProccess({
+      ...proccess,
+      id_section: data.body
+    })
+
+  } catch (error) {
+    swal('Ops!', 'ERROR DE CONEXION', 'error')
+    dispatch({
+      type: SECTION_ERROR,
+      payload: false
+    })
+  }
+}
+
 export {
   addSection,
   getSection,
-  trashSection
+  trashSection,
+  sectionPrefix
 }
